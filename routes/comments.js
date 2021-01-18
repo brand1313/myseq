@@ -1,0 +1,60 @@
+const express = require('express');
+const { User, Comment } = require('../models');
+
+const router = express.Router();
+
+router.get('/:id', async(req, res, next) => {
+    try{
+        const result = await Comment.findAll({
+            include:{
+                model: User,
+                where: {id:req.params.id},
+            },
+        })
+    }catch(err){
+        console.error(err);
+        next(err);
+    }
+});
+
+router.post('/', async(req, res, next) => {
+    
+    try{
+        
+        const result = await Comment.create({
+            commenter: req.body.id,
+            comment: req.body.comment,
+        });
+
+        console.log(result);
+        res.status(201).json(result);
+
+    }catch(err){
+        console.error(err);
+        next(err);
+    }
+});
+
+router.put('/:id', async(req, res, next) => {
+    try{
+        const result = await Comment.update({comment: req.body.comment}, {where:{ id:req.params.id }})
+        console.log(result);
+        res.json(result);
+    }catch(err){
+        console.error(err);
+        next(err);
+    }
+});
+
+router.delete('/:id', async(req, res, next) => {
+    try{
+        const result = await Comment.destroy({ where: {id: req.params.id} });
+        console.log(result);
+        res.status(204).json(result);    
+    }catch(err){
+        console.error(err);
+        next(err);
+    }
+});
+
+module.exports = router;
